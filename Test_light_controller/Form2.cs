@@ -1,13 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Test_light_controller
@@ -107,6 +101,11 @@ namespace Test_light_controller
             SearchAnAddSerialToComboBox();
         }
 
+        /// <summary>
+        /// 触发设置界面，更新Form2UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UserControl1_NotificationSettings(object sender, EventArgs e)
         {         
             userControl1 = (UserControl1)sender;
@@ -227,6 +226,7 @@ namespace Test_light_controller
                     MessageBox.Show("请输入名称！！");
                     return;
                 }                           
+                //如果是设置作用，则触发设置事件
                 Settings?.Invoke(this, serialStructure);
                 this.Close();
             }

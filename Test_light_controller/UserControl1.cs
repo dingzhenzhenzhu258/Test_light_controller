@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO.Ports;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Test_light_controller.Light;
 
@@ -49,26 +42,18 @@ namespace Test_light_controller
             this.label4.Text = serialStructure.name;
             this.serialStructure = serialStructure;
             this.light.Sn = serialStructure.ChannelValue.ToString();
-            this.MouseDown += Control_MouseDown;
-            this.MouseDoubleClick += UserControl1_MouseDoubleClick1;
+            this.MouseDown += UserControl1_Click;
+            this.MouseDoubleClick += UserControl1_MouseDoubleClick;
             this.BackColor = Color.AliceBlue;
             this.label7.Text = serialStructure.SerialNumber.ToString();
             Form1.ValueC += Form1_ValueC;
         }
 
-        private void UserControl1_MouseDoubleClick1(object sender, MouseEventArgs e)
-        {
-            UserControl1_MouseDoubleClick(sender, e);
-        }
-
-        private void Control_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                UserControl1_Click(sender, e);
-            }
-        }
-
+        /// <summary>
+        /// 同步修改光源值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_ValueC(object sender, int e)
         {
             Form1 form1 = (Form1)sender;
@@ -78,6 +63,11 @@ namespace Test_light_controller
             }
         }
 
+        /// <summary>
+        /// 鼠标双击触发,打开设置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UserControl1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (button1.Text == "关闭串口" || isSerialPortOpen == true)
@@ -87,10 +77,16 @@ namespace Test_light_controller
             }
             Form2 form2 = new Form2(this);
             form2.Settings += Form2_Settings;
+            //更新Form2UI
             NotificationSettings?.Invoke(this, e);
             form2.ShowDialog();
         }
 
+        /// <summary>
+        /// 设置(把Form2的设置更新到用户控件中)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form2_Settings(object sender, SerialStructure e)
         {
             Form1 parentForm = (Form1)this.FindForm();
@@ -111,6 +107,11 @@ namespace Test_light_controller
             Click?.Invoke(this, isSerialPortOpen);   
         }
 
+        /// <summary>
+        /// 打开串口按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (!this.IsSelected())
@@ -128,6 +129,9 @@ namespace Test_light_controller
             }          
         }
 
+        /// <summary>
+        /// 打开串口
+        /// </summary>
         private void OpenSerialPort()
         {
             try
@@ -160,11 +164,13 @@ namespace Test_light_controller
             }
         }
 
+        /// <summary>
+        /// 关闭串口
+        /// </summary>
         private void CloseSerialPort()
         {
             try
             {
-                // 仅允许当前控件关闭串口，确保相同串口号但不同通道值的控件不能关闭已打开的串口
                 if (this.ParentForm is Form1 form1)
                 {
                     bool canClosePort = true;
@@ -190,12 +196,8 @@ namespace Test_light_controller
                         button1.Text = "打开串口";
                         light.IsOpen = false;
 
-                        // 从 OpenSerialPorts 中移除对应的串口记录
+                        // 从 openWith 中移除对应的串口记录
                         openWith.Remove(sp);
-                    }
-                    else
-                    {
-                        MessageBox.Show("当前串口已被其他通道打开，请选中对应的通道进行关闭", "提示");
                     }
                 }
             }
@@ -205,6 +207,11 @@ namespace Test_light_controller
             }
         }
 
+        /// <summary>
+        /// 鼠标单击触发，实现选中
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UserControl1_Click(object sender, EventArgs e)
         {
             Form1 parentForm = (Form1)this.FindForm();
@@ -235,12 +242,21 @@ namespace Test_light_controller
             parentForm.SetActiveControl(this);
         }
 
-
+        /// <summary>
+        /// 判断是否选中该控件
+        /// </summary>
+        /// <returns></returns>
         public bool IsSelected()
         {
+            //假如颜色为灰色代表选中该控件
             return this.BackColor == Color.FromArgb(211, 211, 211);
         }
 
+        /// <summary>
+        /// 删除按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void 删除ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (button1.Text == "关闭串口" || isSerialPortOpen == true)
@@ -251,12 +267,16 @@ namespace Test_light_controller
             Delect?.Invoke(this,EventArgs.Empty);
         }
 
+        /// <summary>
+        /// 关闭光源
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
             light.TurnOff();
             light.Brightness = 0;
             Click?.Invoke(this, isSerialPortOpen);
-
         }
     }
 }
