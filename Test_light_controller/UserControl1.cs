@@ -235,6 +235,7 @@ namespace Test_light_controller
             parentForm.SetActiveControl(this);
         }
 
+
         public bool IsSelected()
         {
             return this.BackColor == Color.FromArgb(211, 211, 211);
